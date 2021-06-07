@@ -1,0 +1,26 @@
+(+ 1 2)
+
+(load-file "hello.mal")
+
+(* 5 (+ 1 2))
+ '(* 5 (+ 1 2))
+ (quote (* 5 (+ 1 2)))
+ (def! a (list 1 2))
+  '(a,~a,~@a)
+  `(a,~a,~@a)
+
+(def! cond1 false)
+(def! do1 (fn* () (prn "do1")))
+(def! cond2 true)
+(def! do2 (fn* () (prn "do2")))
+(def! cond3 false)
+(def! do3 (fn* () (prn "do3")))
+(apply (cond cond1 do1 cond2 do2 cond3 do3) [])
+((cond cond1 do1 cond2 do2 cond3 do3))
+(macroexpand (cond cond1 do1 cond2 do2 cond3 do3))
+
+(try* (throw "a exception") (catch* e (prn "capture" e)))
+(def! square (fn* (a) (* a a)))
+(map square '(1 2 3))
+(map square [1 2 3])
+(apply square '(8))
