@@ -50,23 +50,23 @@ namespace Mal
         public static List<string> tokenize(string str)
         {
             List<string> tokens = new List<string>();
-            /*
-             * 1.[\s ,]*(~@
-             * 以零或多个非可见字符或空格或逗号开头的左括号
-             * 2.[\[\]{}()'`~@]
-             * [or]or{or}or(or)or,or`or~or@
-             * 3.""(?:[\\].|[^\\""])*""?
-             * 4.;.*
-             * 5.[^\s \[\]{}()'""`~@,;]*)
+            /* 断句
+            [\s ,]*(~@
+                     |[\[\]{}()'`~@]
+                     |""(?:[\\].|[^\\""])*""?
+                     |;.*
+                     |[^\s \[\]{}()'""`~@,;]*
+                    )
              */
             string pattern = @"[\s ,]*(~@|[\[\]{}()'`~@]|""(?:[\\].|[^\\""])*""?|;.*|[^\s \[\]{}()'""`~@,;]*)";
             Regex regex = new Regex(pattern);
+            Console.WriteLine("str: " + str);
             foreach (Match match in regex.Matches(str))
             {
                 string token = match.Groups[1].Value;
                 if ((token != null) && !(token == "") && !(token[0] == ';'))
                 {
-                    //Console.WriteLine("match: ^" + match.Groups[1] + "$");
+                    Console.WriteLine("match: " + match.Groups[1]);
                     tokens.Add(token);
                 }
             }
@@ -76,6 +76,17 @@ namespace Mal
         public static MalVal read_atom(Reader_ rdr)
         {
             string token = rdr.next();
+            ///
+            /// (^-?[0-9]+$) 整数
+            /// |(^-?[0-9][0-9.]*$) 
+            /// |(^nil$)
+            /// |(^true$)
+            /// |(^false$)
+            /// |(^""(?:[\\].|[^\\""])*""$)
+            /// |(^"".*$)
+            /// |:(.*)
+            /// |(^[^""]*$) 符号
+            ///
             string pattern = @"(^-?[0-9]+$)|(^-?[0-9][0-9.]*$)|(^nil$)|(^true$)|(^false$)|(^""(?:[\\].|[^\\""])*""$)|(^"".*$)|:(.*)|(^[^""]*$)";
             Regex regex = new Regex(pattern);
             Match match = regex.Match(token);
